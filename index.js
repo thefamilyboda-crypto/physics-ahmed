@@ -1,3 +1,4 @@
+const Jimp = require("jimp");
 const express = require('express');
 const multer = require('multer');
 const fs = require('fs');
@@ -25,6 +26,57 @@ function getUser(req) {
     return null;
 }
 
+
+
+
+let cachedIcon = null;
+app.get("/icon.png", async (req, res) => {
+  try {
+    if (!cachedIcon) {
+      const img = new Jimp(512, 512, 0x070d19ff);
+      const cx = 256, cy = 256;
+      img.scan(0, 0, 512, 512, function(x, y, idx) {
+        const dx = x - cx, dy = y - cy;
+        const d = Math.sqrt(dx*dx + dy*dy);
+        if (d < 42) { this.bitmap.data.writeUInt32BE(0x38bdf8ff, idx); }
+        else if (d > 210 && d < 228) { this.bitmap.data.writeUInt32BE(0x0284c7ff, idx); }
+        else {
+          const a1 = Math.PI / 6, a2 = -Math.PI / 6, a3 = Math.PI / 2;
+          const checkE = (a) => {
+            const rx = dx * Math.cos(a) + dy * Math.sin(a);
+            const ry = -dx * Math.sin(a) + dy * Math.cos(a);
+            const val = (rx*rx)/(190*190) + (ry*ry)/(68*68);
+            return Math.abs(val - 1) < 0.14;
+          };
+          if (checkE(a1) || checkE(a2) || checkE(a3)) {
+            this.bitmap.data.writeUInt32BE(0x38bdf8ff, idx);
+          }
+        }
+      });
+      cachedIcon = await img.getBufferAsync(Jimp.MIME_PNG);
+    }
+    res.writeHead(200, { "Content-Type": "image/png", "Content-Length": cachedIcon.length });
+    res.end(cachedIcon);
+  } catch (e) { res.status(500).end(); }
+});
+
+app.get("/manifest.json", (req, res) => {
+  res.json({
+    name: "منصة Mando للفيزياء",
+    short_name: "منصة Mando",
+    start_url: "/",
+    display: "standalone",
+    background_color: "#070d19",
+    theme_color: "#0284c7",
+    icons: [{ src: "/icon.png", sizes: "192x192", type: "image/png" }, { src: "/icon.png", sizes: "512x512", type: "image/png" }]
+  });
+});
+
+app.get("/sw.js", (req, res) => {
+  res.type("application/javascript");
+  res.send("self.addEventListener(\"fetch\", () => {});");
+});
+
 app.get('/', (req, res) => {
     const user = getUser(req);
     if (!user) return res.send(`<!DOCTYPE html>
@@ -32,7 +84,7 @@ app.get('/', (req, res) => {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>منصة أ. أحمد للفيزياء | الثانوية العامة</title>
+<title>منصة Mando للفيزياء | الثانوية العامة</title>
 <link href="https://googleapis.com" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:"Cairo",Tahoma,sans-serif}
@@ -70,17 +122,17 @@ button:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(2,132,199,0.4
 .card p{color:#94a3b8;font-size:0.9rem}
 footer{text-align:center;padding:25px;border-top:1px solid rgba(255,255,255,0.08);color:#64748b;font-size:0.9rem;margin-top:40px}
 </style>
-</head>
+<link rel="manifest" href="/manifest.json"><link rel="icon" href="/icon.png"><meta name="theme-color" content="#0284c7"></head>
 <body>
 <div class="bg-glow"></div><div class="bg-glow2"></div>
 <header>
-  <div class="logo">⚛️ منصة أ. أحمد للفيزياء</div>
+  <div class="logo">⚛️ منصة Mando للفيزياء</div>
   <a href="#login" class="nav-btn">دخول المنصة</a>
 </header>
 <section class="hero">
   <div class="hero-text">
     <div class="badge">🚀 طريقك للدرجة النهائية في الفيزياء</div>
-    <h1>افهم الفيزياء ببساطة مع <span>أ. أحمد</span></h1>
+    <h1>افهم الفيزياء ببساطة مع <span>Mando</span></h1>
     <p>منصة تعليمية متكاملة لطلاب المرحلة الثانوية. شرح مبسط بأحدث الطرق، مذكرات شاملة، وامتحانات تفاعلية تؤهلك للتفوق بأعلى الدرجات.</p>
     <div class="stats">
       <div class="stat"><h3>1, 2, 3</h3><span>الصفوف الثانوية</span></div>
@@ -106,13 +158,32 @@ footer{text-align:center;padding:25px;border-top:1px solid rgba(255,255,255,0.08
     <div class="card"><div class="icon">📱</div><h3>سهلة من أي مكان</h3><p>تصفح دروسك من الموبايل أو الكمبيوتر بكل سهولة وسرعة.</p></div>
   </div>
 </section>
-<footer>جميع الحقوق محفوظة © منصة أ. أحمد للفيزياء</footer>
+<footer>جميع الحقوق محفوظة © منصة Mando للفيزياء</footer>
 
 <style>
 .wa-float{position:fixed;bottom:22px;left:22px;background:#25d366;color:#fff;padding:12px 18px;border-radius:50px;text-decoration:none;font-weight:800;font-size:0.95rem;display:flex;align-items:center;gap:8px;box-shadow:0 8px 20px rgba(37,211,102,0.4);z-index:999;transition:0.3s}
 .wa-float:hover{transform:scale(1.06);background:#1ebe5d}
 </style>
 <a href="https://wa.me{phone}?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%20%D9%8A%D8%A7%20%D9%85%D8%B3%D8%AA%D8%B1%20%D8%A3%D8%AD%D9%85%D8%AF%D8%8C%20%D9%85%D8%AD%D8%AA%D8%A7%D8%AC%20%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%D9%83%20%D9%81%D9%8A%20%D9%85%D9%86%D8%B5%D8%A9%20%D8%A7%D9%84%D9%81%D9%8A%D8%B2%D9%8A%D8%A7%D8%A1" target="_blank" class="wa-float">💬 تواصل واتساب</a>
+
+<button id="installBtn" style="display:none;background:#10b981;margin-top:12px;font-size:0.95rem">📲 تثبيت التطبيق على الشاشة</button>
+<script>
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");
+let deferredPrompt;
+const btn = document.getElementById("installBtn");
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  btn.style.display = "block";
+});
+btn.addEventListener("click", async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt = null;
+    btn.style.display = "none";
+  }
+});
+</script>
 </body>
 </html>`);
 
