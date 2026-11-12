@@ -30,6 +30,8 @@ function getUser(req) {
 
 
 let cachedIcon = null;
+
+let cachedIcon = null;
 app.get("/icon.png", async (req, res) => {
   try {
     if (!cachedIcon) {
@@ -62,8 +64,8 @@ app.get("/icon.png", async (req, res) => {
 
 app.get("/manifest.json", (req, res) => {
   res.json({
-    name: "منصة Mando للفيزياء",
-    short_name: "منصة Mando",
+    name: "Eng. Ahmed Mohamed - Physics",
+    short_name: "Eng. Ahmed Mohamed",
     start_url: "/",
     display: "standalone",
     background_color: "#070d19",
@@ -84,7 +86,7 @@ app.get('/', (req, res) => {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>منصة Mando للفيزياء | الثانوية العامة</title>
+<title>منصة Eng. Ahmed Mohamed للفيزياء | الثانوية العامة</title>
 <link href="https://googleapis.com" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:"Cairo",Tahoma,sans-serif}
@@ -126,13 +128,13 @@ footer{text-align:center;padding:25px;border-top:1px solid rgba(255,255,255,0.08
 <body>
 <div class="bg-glow"></div><div class="bg-glow2"></div>
 <header>
-  <div class="logo">⚛️ منصة Mando للفيزياء</div>
+  <div class="logo">⚛️ منصة Eng. Ahmed Mohamed للفيزياء</div>
   <a href="#login" class="nav-btn">دخول المنصة</a>
 </header>
 <section class="hero">
   <div class="hero-text">
     <div class="badge">🚀 طريقك للدرجة النهائية في الفيزياء</div>
-    <h1>افهم الفيزياء ببساطة مع <span>Mando</span></h1>
+    <h1>افهم الفيزياء ببساطة مع <span>Eng. Ahmed Mohamed</span></h1>
     <p>منصة تعليمية متكاملة لطلاب المرحلة الثانوية. شرح مبسط بأحدث الطرق، مذكرات شاملة، وامتحانات تفاعلية تؤهلك للتفوق بأعلى الدرجات.</p>
     <div class="stats">
       <div class="stat"><h3>1, 2, 3</h3><span>الصفوف الثانوية</span></div>
@@ -158,7 +160,7 @@ footer{text-align:center;padding:25px;border-top:1px solid rgba(255,255,255,0.08
     <div class="card"><div class="icon">📱</div><h3>سهلة من أي مكان</h3><p>تصفح دروسك من الموبايل أو الكمبيوتر بكل سهولة وسرعة.</p></div>
   </div>
 </section>
-<footer>جميع الحقوق محفوظة © منصة Mando للفيزياء</footer>
+<footer>جميع الحقوق محفوظة © منصة Eng. Ahmed Mohamed للفيزياء</footer>
 
 <style>
 .wa-float{position:fixed;bottom:22px;left:22px;background:#25d366;color:#fff;padding:12px 18px;border-radius:50px;text-decoration:none;font-weight:800;font-size:0.95rem;display:flex;align-items:center;gap:8px;box-shadow:0 8px 20px rgba(37,211,102,0.4);z-index:999;transition:0.3s}
