@@ -30,10 +30,6 @@ function getUser(req) {
 
 
 let cachedIcon = null;
-
-let cachedIcon = null;
-
-let cachedIcon = null;
 app.get("/icon.png", async (req, res) => {
   try {
     if (!cachedIcon) {
